@@ -34,6 +34,7 @@ function startGame() {
 }
 
 function handleClick(e) {
+  console.log('Clicked cell');
   const cell = e.target;
   const currentClass = circleTurn ? O_CLASS : X_CLASS;
   placeMark(cell, currentClass);
@@ -48,42 +49,48 @@ function handleClick(e) {
 }
 
 function endGame(draw) {
-    if (draw) {
-      winningMessageTextElement.innerText = 'Draw!';
-    } else {
-      winningMessageTextElement.innerText = `${circleTurn ? "O's" : "X's"} Wins!`;
-    }
-    winningMessageElement.classList.add('show');
+  if (draw) {
+    winningMessageTextElement.innerText = 'Draw!';
+  } else {
+    winningMessageTextElement.innerText = `${circleTurn ? "O's" : "X's"} Wins!`;
   }
-  
-  function isDraw() {
-    return [...cellElements].every(cell => {
-      return cell.classList.contains(X_CLASS) || cell.classList.contains(O_CLASS);
+  winningMessageElement.classList.add('show');
+  cellElements.forEach(cell => {
+    cell.removeEventListener('click', handleClick);
+  });
+}
+
+function isDraw() {
+  return [...cellElements].every(cell => {
+    return cell.classList.contains(X_CLASS) || cell.classList.contains(O_CLASS);
+  });
+}
+
+function placeMark(cell, currentClass) {
+  cell.classList.add(currentClass);
+  const mark = document.createElement('div');
+  mark.classList.add(currentClass === X_CLASS ? 'x' : 'o');
+  cell.appendChild(mark);
+}
+
+function swapTurns() {
+  circleTurn = !circleTurn;
+}
+
+function setBoardHoverClass() {
+  board.classList.remove(X_CLASS);
+  board.classList.remove(O_CLASS);
+  if (circleTurn) {
+    board.classList.add(O_CLASS);
+  } else {
+    board.classList.add(X_CLASS);
+  }
+}
+
+function checkWin(currentClass) {
+  return WINNING_COMBINATIONS.some(combination => {
+    return combination.every(index => {
+      return cellElements[index].classList.contains(currentClass);
     });
-  }
-  
-  function placeMark(cell, currentClass) {
-    cell.classList.add(currentClass);
-  }
-  
-  function swapTurns() {
-    circleTurn = !circleTurn;
-  }
-  
-  function setBoardHoverClass() {
-    board.classList.remove(X_CLASS);
-    board.classList.remove(O_CLASS);
-    if (circleTurn) {
-      board.classList.add(O_CLASS);
-    } else {
-      board.classList.add(X_CLASS);
-    }
-  }
-  
-  function checkWin(currentClass) {
-    return WINNING_COMBINATIONS.some(combination => {
-      return combination.every(index => {
-        return cellElements[index].classList.contains(currentClass);
-      });
-    });
-  }
+  });
+}
