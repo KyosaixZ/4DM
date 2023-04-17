@@ -78,30 +78,29 @@
               <div class="col-xl-6 col-lg-8">
                 <h1>Tic Tac Toe<span>.</span></h1>
                 <br>
-                  <div class="game">
-                    <div id="board" class="board">
-                      <div class="cell" data-cell></div>
-                      <div class="cell" data-cell></div>
-                      <div class="cell" data-cell></div>
-                      <div class="cell" data-cell></div>
-                      <div class="cell" data-cell></div>
-                      <div class="cell" data-cell></div>
-                      <div class="cell" data-cell></div>
-                      <div class="cell" data-cell></div>
-                      <div class="cell" data-cell></div>
-                    </div>
-                    <br>
-                    <div id="winningMessage" class="winning-message">
-                      <div data-winning-message-text></div>
-                      <button id="restartButton">Restart</button>
-                    </div>
-                    <br>
-                    <div class="buttons">
-                      <button id="easyButton">Easy</button>
-                      <button id="mediumButton">Medium</button>
-                      <button id="hardButton">Hard</button>
-                    </div>
-                  </div>               
+                  <table>
+                    <tr>
+                      <td id="0"></td>
+                      <td id="1"></td>
+                      <td id="2"></td>
+                    </tr>
+                    <tr>
+                      <td id="3"></td>
+                      <td id="4"></td>
+                      <td id="5"></td>
+                    </tr>
+                    <tr>
+                      <td id="6"></td>
+                      <td id="7"></td>
+                      <td id="8"></td>
+                    </tr>
+                  </table>
+                  <button href="#about" class="get-started-btn scrollto" id="reset">
+                    Reset
+                  </button>  
+                  <button href="#about" class="get-started-btn scrollto" id="toggle-bot">
+                    Play with Bot
+                  </button>         
 
                   <script src="../assets/js/TTT.js"></script>
               </div>

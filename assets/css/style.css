@@ -392,52 +392,35 @@ h6 {
 /*--------------------------------------------------------------
 # Hero Section
 --------------------------------------------------------------*/
-.x {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  height: 80%;
-  background-color: transparent;
-  border: 3px solid #fff;
-  border-radius: 50%;
+table {
+	margin: auto;
+	border-collapse: collapse;
 }
 
-.o {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 70%;
-  height: 70%;
-  background-color: transparent;
-  border: 3px solid #fff;
-  border-radius: 50%;
+td {
+	width: 150px;
+	height: 150px;
+	border: 1px solid rgb(255, 255, 255);
+	text-align: center;
+	font-size: 80px;
+	font-weight: bold;
+	cursor: pointer;
 }
 
-#board {
-  display: flex;
-  flex-wrap: wrap;
-  width: 600px;
-  margin: 0 auto;
+td:hover {
+	background-color: #eee;
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%; 
+h1 {
+	text-align: center;
 }
 
-.cell {
-  box-sizing: border-box;
-  border: 1px solid rgb(255, 255, 255);
-  width: calc(100% / 3);
-  height: 100px;
-  text-align: center;
-  font-size: 30px;
-  line-height: 300px;
+button {
+  margin-top: 20px;
+  font-size: 20px;
+  padding: 10px 20px;
   cursor: pointer;
+  background-color: transparent;
 }
 
 #hero {

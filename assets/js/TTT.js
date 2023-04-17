@@ -1,96 +1,165 @@
-const X_CLASS = 'x';
-const O_CLASS = 'o';
-const WINNING_COMBINATIONS = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-];
-const cellElements = document.querySelectorAll('[data-cell]');
-const board = document.getElementById('board');
-const winningMessageElement = document.getElementById('winningMessage');
-const restartButton = document.getElementById('restartButton');
-const winningMessageTextElement = document.querySelector('[data-winning-message-text]');
-let circleTurn;
+// variables to keep track of game state
+let board = ['', '', '', '', '', '', '', '', ''];
+let currentPlayer = 'X';
+let gameStatus = '';
 
-startGame();
+// selectors
+const cells = document.querySelectorAll('td');
+const resetBtn = document.getElementById('reset');
 
-restartButton.addEventListener('click', startGame);
+// add event listener to each cell
+cells.forEach((cell) => {
+	cell.addEventListener('click', cellClicked);
+});
 
-function startGame() {
-  circleTurn = false;
-  cellElements.forEach(cell => {
-    cell.classList.remove(X_CLASS);
-    cell.classList.remove(O_CLASS);
-    cell.removeEventListener('click', handleClick);
-    cell.addEventListener('click', handleClick, { once: true });
-  });
-  setBoardHoverClass();
-  winningMessageElement.classList.remove('show');
-}
+// add event listener to reset button
+resetBtn.addEventListener('click', resetGame);
 
-function handleClick(e) {
-  console.log('Clicked cell');
-  const cell = e.target;
-  const currentClass = circleTurn ? O_CLASS : X_CLASS;
-  placeMark(cell, currentClass);
-  if (checkWin(currentClass)) {
-    endGame(false);
-  } else if (isDraw()) {
-    endGame(true);
-  } else {
-    swapTurns();
-    setBoardHoverClass();
+// function to handle cell clicked
+function cellClicked() {
+  const cellIndex = parseInt(this.id);
+
+  // check if cell is already clicked or game is over
+  if (board[cellIndex] !== '' || gameStatus !== '') {
+      return;
+  }
+
+  // update board with current player's symbol
+  board[cellIndex] = currentPlayer;
+
+  // update cell text content and style
+  this.textContent = currentPlayer;
+  this.style.color = currentPlayer === 'X' ? 'red' : 'blue';
+
+  // check if current player has won
+  if (checkWin()) {
+      gameStatus = `${currentPlayer} wins!`;
+      endGame();
+      return;
+  }
+
+  // check if game is tied
+  if (checkTie()) {
+      gameStatus = 'Tie game!';
+      endGame();
+      return;
+  }
+
+  // switch to next player
+  currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+  // if playing with bot and it's the bot's turn
+  if (playWithBot && currentPlayer === 'O') {
+      // make bot's move
+      const botIndex = getBotMove();
+      cells[botIndex].click();
   }
 }
 
-function endGame(draw) {
-  if (draw) {
-    winningMessageTextElement.innerText = 'Draw!';
-  } else {
-    winningMessageTextElement.innerText = `${circleTurn ? "O's" : "X's"} Wins!`;
+// function to check if current player has won
+function checkWin() {
+	// check rows
+	for (let i = 0; i < 9; i += 3) {
+		if (board[i] !== '' && board[i] === board[i+1] && board[i] === board[i+2]) {
+			return true;
+		}
+	}
+
+	// check columns
+	for (let i = 0; i < 3; i++) {
+		if (board[i] !== '' && board[i] === board[i+3] && board[i] === board[i+6]) {
+			return true;
+		}
+	}
+
+	// check diagonals
+	if (board[0] !== '' && board[0] === board[4] && board[0] === board[8]) {
+		return true;
+	}
+	if (board[2] !== '' && board[2] === board[4] && board[2] === board[6]) {
+		return true;
+	}
+
+	// no win
+	return false;
+}
+
+// function to check if game is tied
+function checkTie() {
+	return board.every((cell) => cell !== '');
+}
+
+// function to end the game
+function endGame() {
+	// disable all cells
+	cells.forEach((cell) => cell.removeEventListener('click', cellClicked));
+
+	// show game status
+	alert(gameStatus);
+}
+
+// function to reset the game
+function resetGame() {
+	// reset variables
+	board = ['', '', '', '', '', '', '', '', ''];
+	currentPlayer = 'X';
+	gameStatus = '';
+
+	// reset cell text content and style
+	cells.forEach((cell) => {
+		cell.textContent = '';
+		cell.style.color = '';
+	});
+
+	// enable all cells
+	cells.forEach((cell) => cell.addEventListener('click', cellClicked));
+}
+
+const toggleBotBtn = document.getElementById('toggle-bot');
+let playWithBot = false;
+
+toggleBotBtn.addEventListener('click', () => {
+    playWithBot = !playWithBot;
+    if (playWithBot) {
+        toggleBotBtn.textContent = 'Play with Human';
+        // make bot's first move
+        const randomIndex = Math.floor(Math.random() * 9);
+        cells[randomIndex].click();
+    } else {
+        toggleBotBtn.textContent = 'Play with Bot';
+    }
+});
+
+function getBotMove() {
+  // check if bot can win on next move
+  for (let i = 0; i < 9; i++) {
+      if (board[i] === '') {
+          board[i] = 'O';
+          if (checkWin()) {
+              board[i] = '';
+              return i;
+          }
+          board[i] = '';
+      }
   }
-  winningMessageElement.classList.add('show');
-  cellElements.forEach(cell => {
-    cell.removeEventListener('click', handleClick);
-  });
-}
 
-function isDraw() {
-  return [...cellElements].every(cell => {
-    return cell.classList.contains(X_CLASS) || cell.classList.contains(O_CLASS);
-  });
-}
-
-function placeMark(cell, currentClass) {
-  cell.classList.add(currentClass);
-  const mark = document.createElement('div');
-  mark.classList.add(currentClass === X_CLASS ? 'x' : 'o');
-  cell.appendChild(mark);
-}
-
-function swapTurns() {
-  circleTurn = !circleTurn;
-}
-
-function setBoardHoverClass() {
-  board.classList.remove(X_CLASS);
-  board.classList.remove(O_CLASS);
-  if (circleTurn) {
-    board.classList.add(O_CLASS);
-  } else {
-    board.classList.add(X_CLASS);
+  // check if human can win on next move
+  for (let i = 0; i < 9; i++) {
+      if (board[i] === '') {
+          board[i] = 'X';
+          if (checkWin()) {
+              board[i] = '';
+              return i;
+          }
+          board[i] = '';
+      }
   }
-}
 
-function checkWin(currentClass) {
-  return WINNING_COMBINATIONS.some(combination => {
-    return combination.every(index => {
-      return cellElements[index].classList.contains(currentClass);
-    });
-  });
+  // choose a random available cell
+  while (true) {
+    const randomIndex = Math.floor(Math.random() * 9);
+    if (board[randomIndex] === '') {
+        return randomIndex;
+    }
+}
 }
