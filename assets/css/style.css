@@ -3,6 +3,10 @@ body {
   color: #444444;
 }
 
+#nav__about:hover:after {
+  content: "To Come";
+}
+
 a {
   color: #ffc451;
   text-decoration: none;
