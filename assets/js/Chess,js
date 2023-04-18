@@ -1,6 +1,7 @@
-const board = document.querySelector('.board');
+// Get the board element from the HTML
+const board = document.querySelector('#board');
 
-// Pieces
+// Define the pieces
 const pieces = {
   black: {
     king: '&#9818;',
@@ -20,63 +21,208 @@ const pieces = {
   }
 };
 
-// Board setup
-const rows = board.children;
-for (let i = 0; i < rows.length; i++) {
-  const row = rows[i];
-  const squares = row.children;
-  for (let j = 0; j < squares.length; j++) {
-    const square = squares[j];
-    if (i === 0 || i === 7) {
-      // Setup black pieces on first and last rows
-      switch (j) {
-        case 0:
-        case 7:
-          square.innerHTML = pieces.black.rook;
-          break;
+// Create the chess board
+function createBoard() {
+  // Loop through the rows and columns of the board
+  for (let row = 1; row <= 8; row++) {
+    for (let col = 1; col <= 8; col++) {
+      // Create a new square element
+      const square = document.createElement('div');
+      square.classList.add('square');
+      // Add the square color class based on its position
+      if ((row + col) % 2 === 0) {
+        square.classList.add('white');
+      } else {
+        square.classList.add('black');
+      }
+      // Add the square to the board
+      board.appendChild(square);
+      // Add the appropriate piece to the square
+      switch (row) {
         case 1:
-        case 6:
-          square.innerHTML = pieces.black.knight;
+          addPiece(square, pieces.black, col);
           break;
         case 2:
-        case 5:
-          square.innerHTML = pieces.black.bishop;
+          addPiece(square, pieces.black, 'pawn');
           break;
-        case 3:
-          square.innerHTML = pieces.black.queen;
+        case 7:
+          addPiece(square, pieces.white, 'pawn');
           break;
-        case 4:
-          square.innerHTML = pieces.black.king;
-          break;
-      }
-    } else if (i === 1 || i === 6) {
-      // Setup black pawns on second and second-to-last rows
-      square.innerHTML = pieces.black.pawn;
-    } else if (i === 2 || i === 5) {
-      // Setup empty squares on third and fifth rows
-      square.innerHTML = '';
-    } else if (i === 3) {
-      // Setup white queen and king on fourth row
-      switch (j) {
-        case 3:
-          square.innerHTML = pieces.white.queen;
-          break;
-        case 4:
-          square.innerHTML = pieces.white.king;
+        case 8:
+          addPiece(square, pieces.white, col);
           break;
         default:
-          square.innerHTML = '';
           break;
       }
-    } else if (i === 4) {
-      // Setup white pawns on fifth row
-      square.innerHTML = pieces.white.pawn;
-    }
-    // Assign square color class based on position
-    if ((i + j) % 2 === 0) {
-      square.classList.add('white');
-    } else {
-      square.classList.add('black');
     }
   }
+}
+
+// Get all the squares on the board
+const squares = document.querySelectorAll('.square');
+
+// Loop through all the squares and add the corresponding piece
+squares.forEach(square => {
+  const row = square.parentNode.rowIndex;
+  const col = square.cellIndex;
+  
+  // Check if the square has a piece assigned to it
+  if (square.innerHTML !== '') {
+    return;
+  }
+  
+  // Assign the piece to the square based on the row and column
+  if (row === 0 || row === 7) {
+    // Setup black pieces on first and last rows
+    switch (col) {
+      case 0:
+      case 7:
+        square.innerHTML = pieces.black.rook;
+        break;
+      case 1:
+      case 6:
+        square.innerHTML = pieces.black.knight;
+        break;
+      case 2:
+      case 5:
+        square.innerHTML = pieces.black.bishop;
+        break;
+      case 3:
+        square.innerHTML = pieces.black.queen;
+        break;
+      case 4:
+        square.innerHTML = pieces.black.king;
+        break;
+    }
+  } else if (row === 1 || row === 6) {
+    // Setup black pawns on second and second-to-last rows
+    square.innerHTML = pieces.black.pawn;
+  } else if (row === 2 || row === 5) {
+    // Setup empty squares on third and fifth rows
+    square.innerHTML = '';
+  } else if (row === 3) {
+    // Setup white queen and king on fourth row
+    switch (col) {
+      case 3:
+        square.innerHTML = pieces.white.queen;
+        break;
+      case 4:
+        square.innerHTML = pieces.white.king;
+        break;
+      default:
+        square.innerHTML = '';
+        break;
+    }
+  } else if (row === 4) {
+    // Setup white pawns on fifth row
+    square.innerHTML = pieces.white.pawn;
+  }
+});
+
+// Add a piece to a square
+function addPiece(square, color, piece) {
+  const pieceChar = color[piece];
+  if (pieceChar) {
+    const pieceElement = document.createElement('div');
+    pieceElement.classList.add('piece');
+    pieceElement.innerHTML = pieceChar;
+    square.appendChild(pieceElement);
+  }
+}
+
+// Call the createBoard function to create the initial board
+createBoard();
+
+const resetBtn = document.getElementById('reset-btn');
+const playWithBotBtn = document.getElementById('play-with-bot-btn');
+
+resetBtn.addEventListener('click', resetGame);
+playWithBotBtn.addEventListener('click', playWithBot);
+
+function resetGame() {
+  // Remove all pieces from the board
+  const pieces = document.querySelectorAll('.piece');
+  pieces.forEach(piece => piece.remove());
+
+  // Reset the board to its original setup
+  const board = document.querySelector('.board');
+  board.innerHTML = '';
+  const rows = ['8', '7', '6', '5', '4', '3', '2', '1'];
+  const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  for (let i = 0; i < rows.length; i++) {
+    const row = document.createElement('div');
+    row.classList.add('row');
+    board.appendChild(row);
+    for (let j = 0; j < cols.length; j++) {
+      const square = document.createElement('div');
+      square.classList.add('square');
+      if ((i + j) % 2 === 0) {
+        square.classList.add('white');
+      } else {
+        square.classList.add('black');
+      }
+      row.appendChild(square);
+      const piece = getInitialPiece(rows[i], cols[j]);
+      if (piece !== '') {
+        square.innerHTML = piece;
+        square.classList.add('piece');
+      }
+    }
+  }
+
+  // Reset the turn to white
+  const turnDisplay = document.querySelector('.turn');
+  turnDisplay.innerHTML = 'White';
+}
+
+// Helper function to get the initial piece for a given square
+function getInitialPiece(row, col) {
+  if (row === '1') {
+    switch (col) {
+      case 'a':
+      case 'h':
+        return '&#9814;'; // rook
+      case 'b':
+      case 'g':
+        return '&#9816;'; // knight
+      case 'c':
+      case 'f':
+        return '&#9815;'; // bishop
+      case 'd':
+        return '&#9813;'; // queen
+      case 'e':
+        return '&#9812;'; // king
+      default:
+        return '';
+    }
+  } else if (row === '2') {
+    return '&#9817;'; // pawn
+  } else if (row === '7') {
+    return '&#9823;'; // pawn
+  } else if (row === '8') {
+    switch (col) {
+      case 'a':
+      case 'h':
+        return '&#9820;'; // rook
+      case 'b':
+      case 'g':
+        return '&#9822;'; // knight
+      case 'c':
+      case 'f':
+        return '&#9821;'; // bishop
+      case 'd':
+        return '&#9819;'; // queen
+      case 'e':
+        return '&#9818;'; // king
+      default:
+        return '';
+    }
+  } else {
+    return '';
+  }
+}
+
+function playWithBot() {
+  // Implement your play with bot logic here
+  console.log('Play with bot button clicked');
 }
