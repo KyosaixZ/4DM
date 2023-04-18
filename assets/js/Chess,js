@@ -1,0 +1,82 @@
+const board = document.querySelector('.board');
+
+// Pieces
+const pieces = {
+  black: {
+    king: '&#9818;',
+    queen: '&#9819;',
+    rook: '&#9820;',
+    bishop: '&#9821;',
+    knight: '&#9822;',
+    pawn: '&#9823;'
+  },
+  white: {
+    king: '&#9812;',
+    queen: '&#9813;',
+    rook: '&#9814;',
+    bishop: '&#9815;',
+    knight: '&#9816;',
+    pawn: '&#9817;'
+  }
+};
+
+// Board setup
+const rows = board.children;
+for (let i = 0; i < rows.length; i++) {
+  const row = rows[i];
+  const squares = row.children;
+  for (let j = 0; j < squares.length; j++) {
+    const square = squares[j];
+    if (i === 0 || i === 7) {
+      // Setup black pieces on first and last rows
+      switch (j) {
+        case 0:
+        case 7:
+          square.innerHTML = pieces.black.rook;
+          break;
+        case 1:
+        case 6:
+          square.innerHTML = pieces.black.knight;
+          break;
+        case 2:
+        case 5:
+          square.innerHTML = pieces.black.bishop;
+          break;
+        case 3:
+          square.innerHTML = pieces.black.queen;
+          break;
+        case 4:
+          square.innerHTML = pieces.black.king;
+          break;
+      }
+    } else if (i === 1 || i === 6) {
+      // Setup black pawns on second and second-to-last rows
+      square.innerHTML = pieces.black.pawn;
+    } else if (i === 2 || i === 5) {
+      // Setup empty squares on third and fifth rows
+      square.innerHTML = '';
+    } else if (i === 3) {
+      // Setup white queen and king on fourth row
+      switch (j) {
+        case 3:
+          square.innerHTML = pieces.white.queen;
+          break;
+        case 4:
+          square.innerHTML = pieces.white.king;
+          break;
+        default:
+          square.innerHTML = '';
+          break;
+      }
+    } else if (i === 4) {
+      // Setup white pawns on fifth row
+      square.innerHTML = pieces.white.pawn;
+    }
+    // Assign square color class based on position
+    if ((i + j) % 2 === 0) {
+      square.classList.add('white');
+    } else {
+      square.classList.add('black');
+    }
+  }
+}
