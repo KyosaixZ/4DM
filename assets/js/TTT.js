@@ -130,36 +130,91 @@ toggleBotBtn.addEventListener('click', () => {
     }
 });
 
+//           EASY BOT
+//
+//function getBotMove() {
+//   // check if bot can win on next move
+//   for (let i = 0; i < 9; i++) {
+//       if (board[i] === '') {
+//           board[i] = 'O';
+//           if (checkWin()) {
+//               board[i] = '';
+//               return i;
+//           }
+//           board[i] = '';
+//       }
+//   }
+
+//   // check if human can win on next move
+//   for (let i = 0; i < 9; i++) {
+//       if (board[i] === '') {
+//           board[i] = 'X';
+//           if (checkWin()) {
+//               board[i] = '';
+//               return i;
+//           }
+//           board[i] = '';
+//       }
+//   }
+
+//   // choose a random available cell
+//   while (true) {
+//     const randomIndex = Math.floor(Math.random() * 9);
+//     if (board[randomIndex] === '') {
+//         return randomIndex;
+//     }
+// }
+// }
+
 function getBotMove() {
-  // check if bot can win on next move
-  for (let i = 0; i < 9; i++) {
+    let bestScore = -Infinity;
+    let move;
+    for (let i = 0; i < 9; i++) {
       if (board[i] === '') {
-          board[i] = 'O';
-          if (checkWin()) {
-              board[i] = '';
-              return i;
-          }
-          board[i] = '';
+        board[i] = 'O';
+        let score = minimax(board, 0, false);
+        board[i] = '';
+        if (score > bestScore) {
+          bestScore = score;
+          move = i;
+        }
       }
-  }
-
-  // check if human can win on next move
-  for (let i = 0; i < 9; i++) {
-      if (board[i] === '') {
-          board[i] = 'X';
-          if (checkWin()) {
-              board[i] = '';
-              return i;
-          }
-          board[i] = '';
-      }
-  }
-
-  // choose a random available cell
-  while (true) {
-    const randomIndex = Math.floor(Math.random() * 9);
-    if (board[randomIndex] === '') {
-        return randomIndex;
     }
-}
-}
+    return move;
+  }
+  
+  function minimax(board, depth, isMaximizing) {
+    if (checkWin() !== null) {
+      if (checkWin() === 'O') {
+        return 10 - depth;
+      } else if (checkWin() === 'X') {
+        return depth - 10;
+      } else {
+        return 0;
+      }
+    }
+  
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === '') {
+          board[i] = 'O';
+          let score = minimax(board, depth + 1, false);
+          board[i] = '';
+          bestScore = Math.max(bestScore, score);
+        }
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === '') {
+          board[i] = 'X';
+          let score = minimax(board, depth + 1, true);
+          board[i] = '';
+          bestScore = Math.min(bestScore, score);
+        }
+      }
+      return bestScore;
+    }
+  }  
